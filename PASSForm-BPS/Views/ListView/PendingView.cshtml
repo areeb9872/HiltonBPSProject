@@ -1,0 +1,196 @@
+﻿@model List<PASSForm_BPS.Models.wf_worklist>
+@inject IHttpContextAccessor httpContext;
+
+@{
+    var roleId = httpContext.HttpContext.Session.GetString("roleid");
+    var a = 0;
+}
+
+<html>
+   
+<head>
+    <title>Your View</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div style="padding-top: 5%;">
+
+
+        <div style="border:2px solid; background-color: white; border-radius: 10px; border-color: white; box-shadow: 1px 0px 9px 1px lightgray; overflow-x: auto;">
+            
+            <table class="table hide" id="App_DataTable">
+                <thead>
+                    <tr class="table table-striped">
+                        <th>BPS Request Id</th>
+                        <th>Territory Code</th>
+                        <th>Workflow Status</th>
+                        <th>Activity Status</th>
+                        <th>Created By</th>
+                        <th>Created On</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderByDescending(x=> x.CreatedOn).ToList())
+                    {
+           
+                        <tr>
+                            <td>
+                                    @(
+                                        "00000" + item.BpsId.ToString()
+                                        )
+                            </td>
+
+                            <td>
+                                @item.TMCode
+                            </td>
+
+                            <td>
+                                @item.Statustype
+                            </td>
+                            @if (item.ActivityStatus == "8")
+                            {
+                                <td>Activity InProgress</td>
+                            }
+                            else if (item.ActivityStatus == "9")
+                            {
+                                <td>Activity Completed</td>
+                            }
+                            else
+                            {
+                                <td>Activity Not Started</td>
+                            }
+
+                            <td>
+                                @item.CreatedBy - @item.User_Name
+
+                            </td>
+                            <td>
+                                <span style="display:none;"></span>
+                                @item.CreatedOn.Value.ToString("dd-MMM-yyyy")
+                            </td>
+                            <td>
+                                @if(ViewBag.Role == "14")
+                                {
+                                    <form asp-action="CDDetails" asp-controller="ListView">
+                                        <input type="hidden" name="id" value="@item.TrackingId">
+                                        <input type="hidden" name="anotherId" value="@item.BpsId">
+                                        <input type="hidden" name="thirdId" value="@item.WFWorklistId">
+                                        <input type="hidden" name="screenId" value="pendingscreen">
+                                        <button type="submit" class="icon-navigation" data-toggle="tooltip" data-placement="top" title="View"><i class="fa fa-eye"></i></button>
+                                    </form>
+                                }
+                                else if (ViewBag.Role == "18")
+                                {
+                                    <form asp-action="CDDetails" asp-controller="ListView">
+                                        <input type="hidden" name="id" value="@item.TrackingId">
+                                        <input type="hidden" name="anotherId" value="@item.BpsId">
+                                        <input type="hidden" name="thirdId" value="@item.WFWorklistId">
+                                        <input type="hidden" name="screenId" value="pendingscreen">
+                                        <button type="submit" class="icon-navigation" data-toggle="tooltip" data-placement="top" title="View"><i class="fa fa-eye"></i></button>
+                                    </form>
+                                }else{
+                                <form asp-action="Details" asp-controller="ListView">
+                                    <input type="hidden" name="id" value="@item.TrackingId">
+                                    <input type="hidden" name="anotherId" value="@item.BpsId">
+                                    <input type="hidden" name="thirdId" value="@item.WFWorklistId">
+                                    <input type="hidden" name="screenId" value="pendingscreen">
+                                    <button type="submit" class="icon-navigation" data-toggle="tooltip" data-placement="top" title="View"><i class="fa fa-eye"></i></button>
+                                </form>
+                                }
+
+                            </td>
+                            
+
+                            
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+   
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/datatable_file.js"></script>
+    <script>
+
+
+
+        $(document).ready(function () {
+          
+            $('#App_DataTable').DataTable({
+                //"order": [[4, "desc"]],
+                "order": [[4, "desc"]], //or asc
+                "columnDefs": [{ type: 'date', 'targets': [4] }],
+                //order: false,
+                //columnDefs: [{
+                //    targets: "_all",
+                //    orderable: false
+                //}],// Order by the first column (index 0) in descending order
+            });
+        });
+       
+        //$(document).ready(function () {
+
+        //    $('#App_DataTable thead tr')
+        //        .clone(true)
+        //        .addClass('filters')
+        //        .appendTo('#App_DataTable thead');
+
+        //    var table = $('#App_DataTable').DataTable({
+        //        order: [[4, "desc"]],
+        //        orderCellsTop: true,
+        //        fixedHeader: true,
+
+        //        initComplete: function () {
+        //            var api = this.api();
+        //            api
+        //                .columns()
+        //                .eq(0)
+        //                .each(function (colIdx) {
+        //                    if (colIdx <= 6) {
+        //                        var cell = $('.filters th').eq(
+        //                            $(api.column(colIdx).header()).index()
+        //                        );
+        //                        var title = $(cell).text();
+
+        //                        $(cell).html('<input type="text"  style="width: 130px;"  />');
+        //                        $(
+        //                            'input',
+        //                            $('.filters th').eq($(api.column(colIdx).header()).index())
+        //                        )
+        //                            .off('keyup change')
+        //                            .on('change', function (e) {
+        //                                $(this).attr('title', $(this).val());
+        //                                var regexr = '({search})';
+
+        //                                var cursorPosition = this.selectionStart;
+        //                                api
+        //                                    .column(colIdx)
+        //                                    .search(
+        //                                        this.value != ''
+        //                                            ? regexr.replace('{search}', '(((' + this.value + ')))')
+        //                                            : '',
+        //                                        this.value != '',
+        //                                        this.value == ''
+        //                                    )
+        //                                    .draw();
+        //                            })
+        //                            .on('keyup', function (e) {
+        //                                e.stopPropagation();
+
+        //                                $(this).trigger('change');
+        //                                $(this)
+        //                                    .focus()[0]
+        //                                    .setSelectionRange(cursorPosition, cursorPosition);
+        //                            });
+
+        //                    }
+        //                });
+        //        },
+        //    });
+        //});
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+﻿@{
+@model List<DsrHiltonDailySalesTeamToChemist202223>
+
+    int productindex = 0;
+}
+<html>
+<head>
+    <style>
+        table {
+            font-family: Arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #d71921; /* Red background color */
+            color: white; /* White text color */
+            font-size: 12px;
+        }
+
+        td {
+            font-size: 10px;
+        }
+
+        .numfield{
+            text-align:end;
+        }
+
+
+    </style>
+</head>
+<body>
+
+  
+
+    <table>
+        <thead>
+            <tr style="font-size:12px;">
+                <th>Pack Code</th>
+                <th>Product Name</th>
+                <th>LastYear Sales(Units)</th>
+                <th>LastYear Sales(Values)</th>
+                <th>Unit Price</th>
+                <th>Expected Business(Units)</th>
+                <th>Expected Business(Values)</th>
+                <th>Discount % </th>
+ 
+            </tr>
+        </thead>
+        <tbody style="font-size:13px;" id="tbl-product-@ViewBag.ChemCode">
+             @if (Model != null)
+             {
+                List<tblproduct> pr = new List<tblproduct>(ViewBag.PAPProducts);
+                double? unitprice = 0.0;
+      
+                @foreach (var item in Model)
+                {
+                    unitprice = pr.Where(x => x.PackCode == item.PackCode).FirstOrDefault().UnitPrice;
+                    <tr>
+                        <td id="PackCode-@ViewBag.ChemCode-@productindex">@item.PackCode</td>
+                        <td id="ProductName-@ViewBag.ChemCode-@productindex">@item.ProductName</td>
+                        <td id="PreUnits-@ViewBag.ChemCode-@productindex" class="numfield">@item.SalesUnits</td>
+                        <td id="PreValue-@ViewBag.ChemCode-@productindex" class="numfield">@item.SalesValueNp</td>
+                        <td id="UnitPrice-@ViewBag.ChemCode-@productindex" class="numfield">@unitprice</td>
+                        <td class="numfield">
+                            <input  type="text" class="numfield" style="width:40%" value="0" id="PostUnits-@ViewBag.ChemCode-@productindex" oninput="PostValCalculation(@ViewBag.ChemCode,@productindex)">
+                            
+                        </td>
+                        <td class="numfield">
+                            <input disabled type="text" class="numfield" style="width:40%" value="0" id="PostValue-@ViewBag.ChemCode-@productindex">
+                            
+                        </td>
+                        <td class="numfield">
+                            <input  type="text" class="numfield" style="width:40%" value="0" id="Discount-@ViewBag.ChemCode-@productindex">
+                            
+                        </td>
+                  
+                    </tr>
+ 
+                    productindex++;
+                    
+                }
+            }
+
+
+        </tbody>
+    </table>
+
+    <div style="padding-top: 2%; text-align: end;">
+        <label>Capping:</label>
+        <input class="numfield" type="text" id="Capping-@ViewBag.ChemCode" style="width: 7%;" />
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/PAPScripts.js"></script>
+
+
+
+</body>
+</html>

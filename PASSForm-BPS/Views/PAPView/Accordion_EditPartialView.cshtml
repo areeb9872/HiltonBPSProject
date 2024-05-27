@@ -1,0 +1,103 @@
+﻿@{
+    @model List<DsrHiltonDailySalesTeamToChemist202223>
+
+    int editproductindex = 0;
+}
+<html>
+<head>
+    <style>
+        table {
+            font-family: Arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #d71921; /* Red background color */
+            color: white; /* White text color */
+            font-size: 12px;
+        }
+
+        td {
+            font-size: 10px;
+        }
+
+        .numfield {
+            text-align: end;
+        }
+    </style>
+</head>
+<body>
+
+
+
+    <table>
+        <thead style="height:50px; background: #d71921; color: white;">
+            <tr style="font-size:12px;">
+                <th>Pack Code</th>
+                <th>Product Name</th>
+                <th>LastYear Sales(Units)</th>
+                <th>LastYear Sales(Values)</th>
+                <th>Unit Price</th>
+                <th>Expected Business(Units)</th>
+                <th>Expected Business(Values)</th>
+                <th>Discount % </th>
+
+            </tr>
+        </thead>
+        <tbody style="font-size:13px;" id="tbl-product-@ViewBag.ChemCode">
+            @if (Model != null)
+            {
+                List<tblproduct> pr = new List<tblproduct>(ViewBag.PAPProducts);
+                double? unitprice = 0.0;
+
+                @foreach (var item in Model)
+                {
+                    unitprice = pr.Where(x => x.PackCode == item.PackCode).FirstOrDefault().UnitPrice;
+                    <tr>
+                        <td id="EditPackCode-@ViewBag.ChemCode-@editproductindex">@item.PackCode</td>
+                        <td id="EditProductName-@ViewBag.ChemCode-@editproductindex">@item.ProductName</td>
+                        <td id="PreEditUnits-@ViewBag.ChemCode-@editproductindex" class="numfield">@item.SalesUnits</td>
+                        <td id="PreEditValue-@ViewBag.ChemCode-@editproductindex" class="numfield">@item.SalesValueNp</td>
+                        <td id="EditUnitPrice-@ViewBag.ChemCode-@editproductindex" class="numfield">@unitprice</td>
+                        <td class="numfield">
+                            <input type="text" class="numfield" style="width:40%" value="0" id="PostEditUnits-@ViewBag.ChemCode-@editproductindex" oninput="EditPAPcalculateValue(@ViewBag.ChemCode,@editproductindex)">
+
+                        </td>
+                        <td class="numfield">
+                            <input disabled type="text" class="numfield" style="width:40%" value="0" id="PostEditValue-@ViewBag.ChemCode-@editproductindex">
+
+                        </td>
+                        <td class="numfield">
+                            <input type="text" class="numfield" style="width:40%" value="0" id="EditDiscount-@ViewBag.ChemCode-@editproductindex">
+
+                        </td>
+
+                    </tr>
+
+                    editproductindex++;
+
+                }
+            }
+
+
+        </tbody>
+    </table>
+    <div style="text-align: end;">
+        <label>Capping:</label>
+        <input class="numfield" type="text" id="EditCapping-@ViewBag.ChemCode" style="width: 7%;" value="" />
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/PAPScripts.js"></script>
+
+
+
+</body>
+</html>

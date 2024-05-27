@@ -1,0 +1,366 @@
+﻿
+@{
+    ViewData["Title"] = "PharmaEdit";
+    @model PASSForm_BPS.ViewModel.BPSRequestListViewModel
+    //int editproductindex = 0;
+}
+
+<html>
+<head>
+    <style>
+/*        .maindiv {
+            height: auto;
+            border: 2px solid white;
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 10x 10px 10px 10px;
+            box-shadow: 0 0 0 0 px;
+            box-shadow: 1px 0px 9px 1px lightgray;
+        }
+
+        textarea {
+            width: 85%;
+            HEIGHT: 100px;
+        }
+
+        #selecteddis {
+            width: 30%;
+            height: 30px;
+        }
+
+        .label {
+            font-weight: bold;
+        }*/
+
+        .teamssubdiv {
+            width: 50%;
+            text-align: center;
+            border-radius: 25px;
+            color: #d71921;
+            border: 2px solid #d71921;
+        }
+
+        table {
+            font-family: Arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #d71921; /* Red background color */
+            color: white; /* White text color */
+            font-size: 12px;
+        }
+
+        td {
+            font-size: 10px;
+        }
+
+/*        .numfield {
+            text-align: end;
+        }*/
+    </style>
+</head>
+<body>
+    <div style="padding-top:1%;">
+        <div class="maindiv">
+            <div style="padding-top:1%;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="label">For:</label>
+                            <div>
+                                <input id="PAPType" disabled type="text" value="Hospital Pharmacies" />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <label class="label">Start Date:</label>
+                            <div>
+                                @foreach(var sdate in Model.BPSrequestpaps){
+                                    <input id="startdate" type="date" value="@GlobalClass.StringDateFormat(@sdate.DiscountDateFrom.ToString())" />
+                                }
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <label class="label">End Date:</label>
+                            <div>
+                                 @foreach(var edate in Model.BPSrequestpaps){
+                                    <input id="enddate" type="date" value="@GlobalClass.StringDateFormat(@edate.DiscountDateFrom.ToString())" />
+                                 }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div style="padding-top:1%;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="label">Teams:</label>
+                            <div class="teamssubdiv">
+                                @foreach (var team in Model.teams)
+                                {
+                                    <label id="TeamName">@team.TeamName</label>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <label class="label">Distributor:</label>
+                            <div>
+                             @foreach (var item1 in Model.Distributers)
+                              {
+                                    <input id="distributer" style="width:100%" disabled type="text" value="@item1.DistributerCode - @item1.DistrubiterName" />
+                              }
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <label class="label">MacroBrick:</label>
+                            <div>
+                                @foreach (var item1 in Model.Macrobricks)
+                                {
+                                    <input id="selectedbrick" style="width:100%" disabled type="text" value="@item1.MacroBrickCode - @item1.MacroBrickName" />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div style="padding-top:2%;">
+                <div class="dropdown" id="mTeamDropdown">
+
+                    <button class="dropdown-toggle">Please Select Chemist</button>
+                    <div class="dropdown-content" id="teamsContent">
+                        @*<input type="text" id="searchBar" placeholder="Search Chemist">*@
+                        <input type="text" id="searchInput" placeholder="Search Chemist" class="form-control">
+                        <div id="selectededitchemist">
+                            <option value="Select">Select</option>
+                            @foreach (var macchem in Model.macChemMappings)
+                            {
+                                var match = Model.ChemistCodes.FirstOrDefault(stringToCheck => stringToCheck.Contains(macchem.ChemistCode));
+                                if (match == null)
+                                {
+                                    <label><input id="{@macchem.ChemistCode}" type="checkbox" value="@macchem.ChemistCode - @macchem.ChemistName">@macchem.ChemistCode - @macchem.ChemistName</label>
+                                }
+                                else
+                                {
+                                    <label><input checked="checked" id="{@macchem.ChemistCode}" type="checkbox" value="@macchem.ChemistCode - @macchem.ChemistName">@macchem.ChemistCode - @macchem.ChemistName</label>
+                                }
+
+                            }
+                        </div>
+                </div>
+            </div>
+            <div style="padding-top:1%;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-6">
+                                <label class="label">Remarks:</label>
+                            <div>
+                                @foreach(var com in Model.BPSrequestpaps)
+                                {
+                                 <textarea id="createcomments">@com.Remarks</textarea>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-2">
+
+                        </div>
+                            <div class="col-4">
+                                <label class="label"> Discount Type::</label>
+                                <div>
+                                    @foreach (var dist in Model.BPSrequestpaps)
+                                    {
+                                        <input id="selecteddis" disabled type="text" value="@dist.DiscountType" />
+                                    }
+                                </div>
+                            </div>
+                    </div>
+                </div>
+
+            </div>
+            <div style="visibility:hidden">
+                @foreach(var reqid in Model.BPSrequestpaps)
+                {
+                    <input style="visibility:hidden;" value="@reqid.TrackingID " id="papareqid" />
+                    
+                }
+            </div>
+        </div>
+    </div>
+
+        <div id="UpdatePharmaciesTableAcc">
+            @foreach (var acc in Model.ChemistCodes)
+            {
+                @foreach (var bpschempappharmacies in Model.chemists)
+                {
+                    if (bpschempappharmacies.ChemistCode == acc)
+                    {
+                        <button  style="margin-top:2%;" id="chemist-@acc" onclick="togglePanel(this)" _idbtn="@acc" class="accordion">@bpschempappharmacies.ChemistCode - @bpschempappharmacies.ChemistName</button>
+                    }
+                }
+                <div class="panel" id="ChemistPanelID-@acc" _id="@acc" style="height:auto;" >
+                    @foreach (var salesphapap in Model.SalesPAPDataPharmacies)
+                    {
+                        @if (salesphapap.Key == acc)
+                        {
+                            <div style="overflow:auto; padding-top: 5%; padding-bottom: 2%; padding-left: 3%;" id="pre-@acc">
+                                <table>
+                                    <thead style="height:50px; background: #d71921; color: white;">
+                                        <tr>
+                                            @foreach (var salesphapapcoloum in salesphapap.Value[0] as IDictionary<string, object>)
+                                            {
+                                                if (salesphapapcoloum.Key == "PackCode")
+                                                {
+                                                    <th>Pack Code</th>
+                                                }
+                                                else if (salesphapapcoloum.Key == "ProductName")
+                                                {
+                                                    <th>Product Name</th>
+                                                }
+                                                else if (salesphapapcoloum.Key == "LastYearSKU")
+                                                {
+                                                    <th>LastYear Sales(Units)</th>
+                                                }
+                                                else if (salesphapapcoloum.Key == "LastYearValue")
+                                                {
+                                                    <th>LastYear Sales(Values)</th>
+                                                }
+                                                else if (salesphapapcoloum.Key == "UnitPrice")
+                                                {
+                                                    <th>Unit Price</th>
+                                                }
+                                                else if (salesphapapcoloum.Key == "ExpectedBusinessUnit")
+                                                {
+                                                    <th>Expected Business(Units</th>
+                                                }
+                                                else if (salesphapapcoloum.Key == "ExpectedBusinessValue")
+                                                {
+                                                    <th>Expected Business(Values)</th>
+                                                }
+                                                else if (salesphapapcoloum.Key == "Discount")
+                                                {
+                                                    <th>Discount % </th>
+                                                }
+
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody style="font-size:13px;" id="tbl-product-@acc">
+                                        @if (salesphapap.Value != null)
+                                        {
+                                            int editproductindex = 0;
+                                            @foreach (var salesphapapdata in salesphapap.Value)
+                                            {
+                                                <tr>
+                                                    @foreach (var Salesphapapdata in salesphapapdata)
+                                                    {
+
+                                                        if (Salesphapapdata.Key == "PackCode")
+                                                        {
+                                                            <td id="EditPackCode-@acc-@editproductindex">@Salesphapapdata.Value</td>
+                                                        }
+                                                        else if (Salesphapapdata.Key == "ProductName")
+                                                        {
+                                                            <td id="EditProductName-@acc-@editproductindex">@Salesphapapdata.Value</td>
+                                                        }
+                                                        else if (Salesphapapdata.Key == "LastYearSKU")
+                                                        {
+                                                            <td id="PreEditUnits-@acc-@editproductindex" class="numfield;">@Salesphapapdata.Value</td>
+                                                        }
+                                                        else if (Salesphapapdata.Key == "LastYearValue")
+                                                        {
+                                                            <td id="PreEditValue-@acc-@editproductindex" class="numfield">@string.Format("{0:#,0}", Salesphapapdata.Value)</td>
+                                                        }
+                                                        else if (Salesphapapdata.Key == "UnitPrice")
+                                                        {
+                                                            <td id="EditUnitPrice-@acc-@editproductindex" class="numfield">@Salesphapapdata.Value</td>
+                                                        }
+                                                        else if (Salesphapapdata.Key == "ExpectedBusinessUnit")
+                                                        {
+                                                            <td class="numfield">
+
+                                                                <input type="text" class="numfield" style="width:40%" value="@Salesphapapdata.Value" id="PostEditUnits-@acc-@editproductindex" oninput="EditPAPcalculateValue(@acc,@editproductindex)">
+                                                            </td>
+                                                        }
+                                                        else if (Salesphapapdata.Key == "ExpectedBusinessValue")
+                                                        {
+                                                            <td class="numfield">
+
+                                                                <input disabled type="text" class="numfield" style="width:40%" value="@string.Format("{0:#,0}", Salesphapapdata.Value)" id="PostEditValue-@acc-@editproductindex">
+                                                            </td>
+                                                        }
+                                                        else if (Salesphapapdata.Key == "Discount")
+                                                        {
+                                                            <td class="numfield">
+                                                                <input type="text" class="numfield" style="width:40%" value="@Salesphapapdata.Value" id="EditDiscount-@acc-@editproductindex">
+                                                            </td>
+                                                        }
+                                                    }
+                                                </tr>
+                                                editproductindex++;
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        }
+                    }
+
+                    <div style="text-align: end;">
+                        <label>Capping:</label>
+                        <input class="numfield" type="text" id="EditCapping-@acc" style="width: 7%;" value="@Model.Bpssalesrecordpaps.FirstOrDefault()?.Capping" />
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="PAPbuttonmaindiv">
+            <input class="PAPbutton" type="submit" value="Update" onclick="EditPAPPharmaciesBPS()" />
+        </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/PAPScripts.js"></script>
+    <script src="~/js/Validation.js"></script>
+    <script>
+
+            $(document).ready(function () {
+
+                $("#selectededitchemist").on('change', function () {
+
+                    editaccordion();
+                });
+            });
+            var acc = document.getElementsByClassName("accordion");
+            var i;
+
+            for (i = 0; i < acc.length; i++) {
+                acc[i].addEventListener("click", function () {
+                    this.classList.toggle("active");
+                    var panel = this.nextElementSibling;
+                    if (panel.style.maxHeight) {
+                        panel.style.maxHeight = null;
+                    } else {
+                        panel.style.maxHeight = panel.scrollHeight + "px";
+
+
+
+                    }
+                });
+            }
+
+
+    </script>
+</body>
+</html>
+
+
+

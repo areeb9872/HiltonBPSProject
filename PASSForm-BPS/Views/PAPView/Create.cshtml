@@ -1,0 +1,198 @@
+﻿
+@{
+    ViewData["Title"] = "Create";
+
+    @model PASSForm_BPS.ViewModel.BPSRequestListViewModel
+}
+
+<html>
+<head>
+    <style>
+/*        .maindiv {
+            height: auto;
+            border: 2px solid white;
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 10x 10px 10px 10px;
+            box-shadow: 0 0 0 0 px;
+            box-shadow: 1px 0px 9px 1px lightgray;
+        }
+
+        textarea {
+            width: 85%;
+            HEIGHT: 100px;
+        }
+
+        #selecteddis {
+            width: 30%;
+            height: 30px;
+        }*/
+
+        .teamssubdiv {
+            width: 50%;
+            text-align: center;
+            border-radius: 25px;
+            color: #d71921;
+            border: 2px solid #d71921;
+        }
+    </style>
+</head>
+<body>
+    <div style="padding-top:1%;">
+        <div class="maindiv">
+            <div style="padding-top:1%;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="label">For:</label>
+                            <div>
+                                <input id="PAPType" disabled type="text" value="Hospital Pharmacies" />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <label class="label">Start Date:</label>
+                            <div>
+                                <input id="startdate" type="date" /><br />
+                                <span id="startDateError" class="text-danger error-message"></span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <label class="label">End Date:</label>
+                            <div>
+                                <input id="enddate" type="date" /><br />
+                                <span id="endDateError" class="text-danger error-message"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div style="padding-top:1%;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="label">Teams:</label>
+                            <div class="teamssubdiv">
+                                @foreach (var team in Model.teams)
+                                {
+                                    <label id="TeamName">@team.TeamName</label>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <label class="label">Distributor:</label>
+                            <div>
+                                <select id="distributer" style="width: 70%; height: 30px;" onchange="getmacrobrickbydiscode()">
+                                    <option value="Select">Select</option>
+                                    @foreach (var item1 in Model.disterMappings)
+                                    {
+                                        <option value="@item1.DistributerCode - @item1.DistrubiterName">@item1.DistributerCode - @item1.DistrubiterName</option>
+                                    }
+
+                                </select><br />
+                                <span id="distributorError" class="text-danger error-message"></span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <label class="label">MacroBrick:</label>
+                            <div>
+                                <select id="selectedbrick" style="width: 70%; height: 30px;" onchange="getchembymacrobrickcode()">
+                                    <option value="Select">Select</option>
+                                    <option id="macrobrickcode"></option>
+                                </select><br />
+                                <span id="macroBrickError" class="text-danger error-message"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div style=" padding-top:2%;">
+                <div class="dropdown" id="mTeamDropdown">
+
+                    <div class="dropdown-toggle" class="label">Please Select Chemist</div>
+                    <div class="dropdown-content" id="teamsContent">
+                        <input type="text" id="searchInput" placeholder="Search Chemist" class="form-control">
+                        <div id="selectedchemist" onclick="createaccordion()">
+                            <!-- Checkboxes will be dynamically added here -->
+                        </div>
+                    </div>
+                </div><br />
+
+            </div>
+            <div style="padding-top:1%;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-6">
+                            <label class="label">Remarks:</label>
+                            <div>
+                                <textarea id="createcomments"></textarea><br />
+                                <span id="remarksError" class="text-danger error-message"></span>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            
+                        </div>
+                        <div class="col-4">
+                            <label class="label">Discount Type::</label>
+                            <div>
+                                <select id="selecteddis">
+                                    <option value="Select">Select</option>
+                                    <option value="Old">Old</option>
+                                    <option value="New">New</option>
+                                </select><br />
+                                <span id="discountTypeError" class="text-danger error-message"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div style="visibility:hidden">
+                <input style="visibility:hidden;" value="@ViewBag.Reqid " id="papareqid" />
+            </div>
+        </div>
+    </div>
+
+    <div id="tableAcc">
+    </div>
+
+
+    <div class="PAPbuttonmaindiv">
+        <input class="PAPbutton" type="submit" value="Create" onclick="CreatePAPBPS()" />
+    </div>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/Validation.js"></script>
+    <script src="~/js/PAPScripts.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            $('#searchInput').on('input', function () {
+                var searchText = $(this).val().toLowerCase();
+                $('#teamsContent input[type="checkbox"]').each(function () {
+                    var optionValue = $(this).val().toLowerCase();
+                    var parentDiv = $(this).closest('label');
+                    if (optionValue.indexOf(searchText) > -1) {
+                        parentDiv.show(); // Show checkbox if it matches the search text
+                    } else {
+                        parentDiv.hide(); // Hide checkbox if it does not match the search text
+                    }
+                });
+            });
+        });
+
+
+
+
+
+    </script>
+</body>
+</html>
+
+
+
